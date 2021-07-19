@@ -18,3 +18,15 @@ function solucao(texto) {
     }
     console.log(novoArray.length)
 }
+
+//resolução
+const array = (texto.trim().split(" "));
+let qtdPalavras = 0;
+for (let item of array) {
+    if (item !== "") {
+        qtdPalavras++;
+    }
+    console.log(qtdPalavras);
+}
+
+

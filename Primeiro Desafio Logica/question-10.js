@@ -18,3 +18,23 @@ function solucao(jogadores) {
         }
     }
 }
+
+//resolução
+
+const listaZero = [];
+const listaUm = [];
+
+for (let item of jogadores) {
+    if (item.jogada === 0) {
+        listaZero.push(item)
+    } else {
+        listaUm.push(item)
+    }
+}
+if (listaZero.length === 1) {
+    console.log(listaZero[0].nome);
+} else if (listaUm.length === 1) {
+    console.log(listaUm[0].nome)
+} else {
+    console.log("NINGUEM")
+}

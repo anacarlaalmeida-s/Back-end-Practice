@@ -2,6 +2,8 @@
 //Quando uma pessoa chega, ela rapidamente identifica uma mesa (vazia e que esteja o mais longe possível de outras mesas ocupadas) para se sentar
 //Caso tenha mais de uma mesa igualmente boa, a pessoa escolhe a que fica mais próxima da porta, que fica ao lado da mesa 1.
 //A entrada consistirá em um único número inteiro N.
+//Imprimir a mesa em que a ultima pessoa escolherá.
+
 function solucao(n) {
     if (n >= 3) {
         console.log(n - 1)
@@ -11,3 +13,12 @@ function solucao(n) {
         console.log(1)
     }
 }
+
+//resolução
+
+if (n === 1 || n === 2) {
+    console.log(n);
+} else {
+    console.log(n - 1)
+}
+

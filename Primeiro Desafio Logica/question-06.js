@@ -15,3 +15,26 @@ function solucao(lista) {
     }
 }
 
+
+//resolução
+
+let menorDentreMaiores;
+for (let item of lista) {
+    if (item >= 18) {
+        if (menorDentreMaiores === undefined) {
+            menorDentreMaiores = item;
+        } else if (item < menorDentreMaiores) {
+            menorDentreMaiores = item;
+        }
+    }
+    if (menorDentreMaiores === undefined) {
+        console.log("CRESCA E APARECA")
+    } else {
+        console.log(menorDentreMaiores)
+    }
+}
+
+
+
+
+
