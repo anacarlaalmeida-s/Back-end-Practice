@@ -1,7 +1,7 @@
 ## Welcome to my Back-end studies timeline!
 
-Hi :blush:! I'm a beginner in developer's world, I started my classes in june/2021.  
-In this repository I will put some exercises in ascending learning order to record my evolution in Back-end.
+Hi :blush:! I'm a beginner in developer's world, I started my classes in 2021/june.  
+In this repository I will put some exercises in ascending learning order to record my evolution at Back-end.
 
 <img src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white"> <img src="https://img.shields.io/badge/Microsoft%20SQL%20Sever-CC2927?style=for-the-badge&logo=microsoft%20sql%20server&logoColor=white">
 ---
