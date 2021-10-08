@@ -175,7 +175,7 @@ function extrato(req, res) {
     transferenciasEnviadas: [],
     transferenciasRecebidas: [],
   };
-
+  
   for (let item of bancoDeDados.depositos) {
     if (item.numero_conta === Number(req.query.numero_conta)) {
       extratoPessoal.depositos.push(item);
