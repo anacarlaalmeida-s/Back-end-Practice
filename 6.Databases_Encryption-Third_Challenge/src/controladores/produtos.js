@@ -7,8 +7,8 @@ const listarProdutos = async (req, res) => {
   try {
     if (categoria) {
       const produtosCategoria = await conexao.query(
-        "select * from produtos where categoria=$1 and usuario_id = $2",
-        [categoria, usuario.id]
+        "select * from produtos where categoria ilike $1 and usuario_id = $2",
+        [`%${categoria}%`, usuario.id]
       );
       return res.status(200).json(produtosCategoria.rows);
     }
@@ -19,13 +19,19 @@ const listarProdutos = async (req, res) => {
     );
     return res.status(200).json(produtos.rows);
   } catch (error) {
-    res.status(500).json(error.message); return
+    return res.status(500).json(error.message);
   }
 };
 
 const detalharProduto = async (req, res) => {
   const { usuario } = req;
   const { id: idProduto } = req.params;
+
+  if (isNaN(Number(idProduto))) {
+    return res.status(400).json({
+      mensagem: "O ID do prodouto deve ser um número inteiro positivo válido.",
+    });
+  }
 
   try {
     const produtoPesquisado = await conexao.query(
@@ -34,19 +40,21 @@ const detalharProduto = async (req, res) => {
     );
 
     if (produtoPesquisado.rowCount === 0) {
-      return res
-        .status(404)
-        .json({mensagem:`Não existe produto cadastrado com ID ${idProduto}.`});
+      return res.status(404).json({
+        mensagem: `Não existe produto cadastrado com ID ${idProduto}.`,
+      });
     }
     if (produtoPesquisado.rows[0].usuario_id !== usuario.id) {
-      return res
-        .status(403)
-        .json({mensagem:"O usuário logado não tem permissão para acessar este produto."});
+      return res.status(403).json({
+        mensagem:
+          "O usuário logado não tem permissão para acessar este produto.",
+      });
     }
-    
-    return res.status(200).json({...produtoPesquisado.rows[0]});
+
+    return res.status(200).json(produtoPesquisado.rows[0]);
   } catch (error) {
-    res.status(500).json(error.message); return
+    res.status(500).json(error.message);
+    return;
   }
 };
 
@@ -55,19 +63,30 @@ const cadastrarProduto = async (req, res) => {
   const { usuario } = req;
 
   if (!nome) {
-    return res.status(400).json({mensagem:"O nome do produto deve ser informado."});
+    return res
+      .status(400)
+      .json({ mensagem: "O nome do produto deve ser informado." });
   }
   if (!quantidade) {
-    return res.status(400).json({mensagem:"A quantidade do produto deve ser informada."});
+    return res
+      .status(400)
+      .json({ mensagem: "A quantidade do produto deve ser informada." });
   }
   if (!preco) {
-    return res.status(400).json({mensagem:"O preço do produto deve ser informado."});
+    return res
+      .status(400)
+      .json({ mensagem: "O preço do produto deve ser informado." });
   }
   if (!descricao) {
-    return res.status(400).json({mensagem:"A descrição do produto deve ser informada."});
+    return res
+      .status(400)
+      .json({ mensagem: "A descrição do produto deve ser informada." });
   }
-  if (quantidade <= 0) {
-    return res.status(400).json({mensagem:"O campo quantidade precisa ser maior que 0."});
+  if (quantidade <= 0 || isNaN(Number(quantidade))) {
+    return res.status(400).json({
+      mensagem:
+        "O campo quantidade precisa ser um número positivo válido e maior que 0.",
+    });
   }
 
   try {
@@ -84,11 +103,13 @@ const cadastrarProduto = async (req, res) => {
     ]);
 
     if (produto.rowCount === 0) {
-      return res.status(400).json({mensagem:"Não foi possível cadastrar o produto."});
+      return res
+        .status(500)
+        .json({ mensagem: "Não foi possível cadastrar o produto." });
     }
-    return res.status(201).json();
+    return res.status(201).send();
   } catch (error) {
-    res.status(500).json(error.message); return
+    return res.status(500).json(error.message);
   }
 };
 
@@ -98,19 +119,29 @@ const atualizarProduto = async (req, res) => {
   const { id: idProduto } = req.params;
 
   if (!nome) {
-    return res.status(400).json({mensagem:"O nome do produto deve ser informado."});
+    return res
+      .status(400)
+      .json({ mensagem: "O nome do produto deve ser informado." });
   }
   if (!quantidade) {
-    return res.status(400).json({mensagem:"A quantidade do produto deve ser informada."});
+    return res
+      .status(400)
+      .json({ mensagem: "A quantidade do produto deve ser informada." });
   }
   if (!preco) {
-    return res.status(400).json({mensagem:"O preço do produto deve ser informado."});
+    return res
+      .status(400)
+      .json({ mensagem: "O preço do produto deve ser informado." });
   }
   if (!descricao) {
-    return res.status(400).json({mensagem:"A descrição do produto deve ser informada."});
+    return res
+      .status(400)
+      .json({ mensagem: "A descrição do produto deve ser informada." });
   }
   if (quantidade <= 0) {
-    return res.status(400).json({mensagem:"O campo quantidade precisa ser maior que 0."});
+    return res
+      .status(400)
+      .json({ mensagem: "O campo quantidade precisa ser maior que 0." });
   }
 
   try {
@@ -120,14 +151,15 @@ const atualizarProduto = async (req, res) => {
     );
 
     if (produtoPesquisado.rowCount === 0) {
-      return res
-        .status(404)
-        .json({mensagem:`Não existe produto cadastrado com ID ${idProduto}.`});
+      return res.status(404).json({
+        mensagem: `Não existe produto cadastrado com ID ${idProduto}.`,
+      });
     }
     if (produtoPesquisado.rows[0].usuario_id !== usuario.id) {
-      return res
-        .status(403)
-        .json({mensagem:"O usuário logado não tem permissão para alterar este produto."});
+      return res.status(403).json({
+        mensagem:
+          "O usuário logado não tem permissão para alterar este produto.",
+      });
     }
 
     const queryProdutoEditado =
@@ -143,11 +175,14 @@ const atualizarProduto = async (req, res) => {
     ]);
 
     if (produtoEditado.rowCount === 0) {
-      return res.status(400).json({mensagem:"Não foi possível atualizar o produto."});
+      return res
+        .status(500)
+        .json({ mensagem: "Não foi possível atualizar o produto." });
     }
-    return res.status(201).json();
+    return res.status(204).send();
   } catch (error) {
-    res.status(500).json(error.message); return
+    res.status(500).json(error.message);
+    return;
   }
 };
 
@@ -162,14 +197,15 @@ const excluirProduto = async (req, res) => {
     );
 
     if (produtoPesquisado.rowCount === 0) {
-      return res
-        .status(404)
-        .json({mensagem:`Não existe produto cadastrado com ID ${idProduto}.`});
+      return res.status(404).json({
+        mensagem: `Não existe produto cadastrado com ID ${idProduto}.`,
+      });
     }
     if (produtoPesquisado.rows[0].usuario_id !== usuario.id) {
-      return res
-        .status(403)
-        .json({mensagem:"O usuário logado não tem permissão para excluir este produto."});
+      return res.status(403).json({
+        mensagem:
+          "O usuário logado não tem permissão para excluir este produto.",
+      });
     }
 
     const produtoExcluido = await conexao.query(
@@ -178,12 +214,15 @@ const excluirProduto = async (req, res) => {
     );
 
     if (produtoExcluido.rowCount === 0) {
-      return res.status(400).json({mensagem:"Não foi possível atualizar o produto."});
+      return res
+        .status(500)
+        .json({ mensagem: "Não foi possível atualizar o produto." });
     }
 
-    return res.status(200).json();
+    return res.status(204).send();
   } catch (error) {
-    res.status(500).json(error.message); return
+    res.status(500).json(error.message);
+    return;
   }
 };
 
