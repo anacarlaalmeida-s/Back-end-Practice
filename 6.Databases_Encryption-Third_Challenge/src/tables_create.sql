@@ -1,5 +1,3 @@
-create database market_cubos;
-
 create table if not exists usuarios (
     id serial primary key,
     nome text not null,
