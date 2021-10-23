@@ -2,7 +2,7 @@
 
 # Desafio Módulo 3 - Back-end
 
-Vídeo demonstrativo da Aplicação no Insomnia: https://www.linkedin.com/posts/anacarlasalmeida_sql-nodejs-apirest-activity-6853568418126290944-X1-m
+Vídeo demonstrativo da Aplicação no Insomnia: https://www.linkedin.com/posts/dev-anacarlaalmeida_sql-nodejs-apirest-activity-6853568418126290944-eyEV
 
 Seu papel é construir uma RESTful API que permita:
 
