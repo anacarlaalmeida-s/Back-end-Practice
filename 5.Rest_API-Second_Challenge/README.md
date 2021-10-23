@@ -2,7 +2,7 @@
 
 # Desafio | Back-end - Módulo 2
 
-Vídeo demonstrativo da aplicação no Insomnia: https://www.linkedin.com/posts/anacarlasalmeida_apirest-nodejs-js-activity-6838493417836703745-iN7C
+Vídeo demonstrativo da aplicação no Insomnia: https://www.linkedin.com/posts/dev-anacarlaalmeida_apirest-nodejs-js-activity-6838493417836703745-i3km
 
 Você acabou de ser contratado pela melhor empresa de tecnologia do mundo: a **CUBOS**.
 Sua primeira tarefa como desenvolvedor é criar uma API para um Banco Digital. Esse será um projeto **piloto**, ou seja, no futuro outras funcionalidades serão implementadas, portanto, dados do banco (nome, agência, etc.) serão imutáveis.
