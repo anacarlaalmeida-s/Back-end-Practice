@@ -1,9 +1,7 @@
-![](https://i.imgur.com/xG74tOh.png)
+# Desafio 
 
-# Desafio | Back-end - Módulo 2
 
-Você acabou de ser contratado pela melhor empresa de tecnologia do mundo: a **CUBOS**.
-Sua primeira tarefa como desenvolvedor é criar uma API para um Banco Digital. Esse será um projeto **piloto**, ou seja, no futuro outras funcionalidades serão implementadas, portanto, dados do banco (nome, agência, etc.) serão imutáveis.
+Criar uma API para um Banco Digital. Esse será um projeto **piloto**, ou seja, no futuro outras funcionalidades serão implementadas, portanto, dados do banco (nome, agência, etc.) serão imutáveis.
 
 Seu papel é construir uma RESTful API que permita:
 
@@ -571,15 +569,3 @@ function extrato(...) {
     mensagem: 'Mensagem do erro!'
 }
 ```
-
-## Aulas úteis:
-
--   [Roteador e Controlador](https://plataforma.cubos.academy/curso/b0149c95-5986-4ac2-ac4c-a0f323353f26/data/28/07/2021/aula/b648d8cb-a9db-4224-96dc-ed83e99bcc7b/27eebd29-2318-41eb-b789-201f075be137)
--   [Aula API REST](https://plataforma.cubos.academy/curso/b0149c95-5986-4ac2-ac4c-a0f323353f26/data/26/07/2021/aula/059dc3f1-f8b5-4e5b-86ec-cea2736645b8/)
--   [Formatando datas com date-fns](https://plataforma.cubos.academy/curso/b0149c95-5986-4ac2-ac4c-a0f323353f26/data/02/08/2021/aula/506a987e-ba14-4ee4-9326-c9e1aa62b7f7/5d2dceac-f1b3-460a-856e-b83701fa5206)
--   [Aula de funções e objetos](https://plataforma.cubos.academy/curso/b0149c95-5986-4ac2-ac4c-a0f323353f26/data/21/06/2021/aula/5fbcc043-aa55-45a4-bced-4c59751fc2d8/)
--   [Aula de Revisão](https://plataforma.cubos.academy/curso/b0149c95-5986-4ac2-ac4c-a0f323353f26/data/18/08/2021/aula/cbf59ce0-e7c7-405d-938e-e70afcbba534/)
-
-**LEMBRE-SE**: é melhor feito do que perfeito!!!
-
-###### tags: `back-end` `módulo 2` `nodeJS` `API REST` `desafio`
