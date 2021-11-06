@@ -1,6 +1,9 @@
 ## Desafio
 
-## Criar uma RESTful API que permita:
+Vídeo demonstrativo da Aplicação no Insomnia: https://www.linkedin.com/posts/dev-anacarlaalmeida_sql-nodejs-apirest-activity-6853568418126290944-eyEV
+
+
+Criar uma RESTful API que permita:
 
 -   Fazer Login
 -   Cadastrar Usuário

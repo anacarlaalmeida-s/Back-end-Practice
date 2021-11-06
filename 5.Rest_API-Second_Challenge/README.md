@@ -1,7 +1,10 @@
 # Desafio 
 
+Vídeo demonstrativo da aplicação no Insomnia: https://www.linkedin.com/posts/dev-anacarlaalmeida_apirest-nodejs-js-activity-6838493417836703745-i3km
+
 
 Criar uma API para um Banco Digital. Esse será um projeto **piloto**, ou seja, no futuro outras funcionalidades serão implementadas, portanto, dados do banco (nome, agência, etc.) serão imutáveis.
+
 
 Seu papel é construir uma RESTful API que permita:
 
