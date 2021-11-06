@@ -1,1 +1,1 @@
-module.exports = 'cubos1234';
+module.exports = '****';
