@@ -3,7 +3,7 @@
 ### Upload de imagem e variáveis de ambiente.
 
 #### Pacotes utilizados:
-    @supabase/supabase-js, bcryptjs, dotenv, express, jsonwebtoken,     knex, nodemailer, nodemailer-express-handlebars, pg
+    @supabase/supabase-js, bcryptjs, dotenv, express, jsonwebtoken, knex, nodemailer, nodemailer-express-handlebars, pg
 
 1 - Configurar variáveis de ambiente.
 
