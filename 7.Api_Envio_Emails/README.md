@@ -2,6 +2,9 @@
 
 ### Desenvolver API para envio de Newsletter
 
+#### Pacotes utilizados:
+    bcryptjs, cors, express, jsonwebtoken, knex, nodemailer, noddemailer-express-handlebars, pg   
+
 Sua tarefa será criar uma API em Node.js que atendam os requisitos abaixo.
 
 1 - Deverá ter a funcionalidade de cadastrar o email e o nome de uma pessoa que deseja receber a Newsletter.

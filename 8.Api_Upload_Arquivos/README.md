@@ -2,6 +2,9 @@
 
 ### Upload de imagem e variáveis de ambiente.
 
+#### Pacotes utilizados:
+    @supabase/supabase-js, bcryptjs, dotenv, express, jsonwebtoken,     knex, nodemailer, nodemailer-express-handlebars, pg
+
 1 - Configurar variáveis de ambiente.
 
 2 - implementar upload de imagem do produto cadastrado.
