@@ -1,0 +1,4 @@
+#### Pacotes utilizados:
+
+Express
+Nodemon
