@@ -3,7 +3,14 @@
 Vídeo demonstrativo da Aplicação no Insomnia: https://www.linkedin.com/posts/dev-anacarlaalmeida_sql-nodejs-apirest-activity-6853568418126290944-eyEV
 
 #### Pacotes utilizados:
-     bcrypt, express, jsonwebtoken, nodemon, pg
+     bcryptjs, express, jsonwebtoken, pg, knex, yup, yup-locales, dotenv
+
+    
+##### Código refatorado em 10/11/2020 
+    * inclusão dos pacotes knex, yup, yup-locales, dotenv.
+    * validações e pacote de tradução das validações com o Yup e Yup-locales;
+    * busca no banco de dados com Knex;
+    * variáveis de ambiente com o Dotenv.
      
 Criar uma RESTful API que permita:
 

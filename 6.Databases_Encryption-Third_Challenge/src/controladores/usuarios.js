@@ -1,52 +1,30 @@
-const conexao = require("../conexao");
-const bcrypt = require("bcrypt");
+const knex = require("../conexao");
+const bcryptjs = require("bcryptjs");
+const validacoesRegistroUsuarios = require("../schemas/validacoesRegistroUsuario");
 
 const cadastrarUsuario = async (req, res) => {
   const { nome, email, senha, nome_loja } = req.body;
 
-  if (!nome) {
-    return res.status(400).json({ mensagem: "O campo nome é obrigatório." });
-  }
-  if (!email) {
-    return res.status(400).json({ mensagem: "O campo email é obrigatório." });
-  }
-  if (!senha) {
-    return res.status(400).json({ mensagem: "O campo senha é obrigatório." });
-  }
-  if (!nome_loja) {
-    return res
-      .status(400)
-      .json({ mensagem: "O campo nome_loja é obrigatório." });
-  }
-
   try {
-    const queryConsultaEmail = "select * from usuarios where email = $1";
-    const { rowCount: quantidadeUsuarios } = await conexao.query(
-      queryConsultaEmail,
-      [email]
-    );
+    await validacoesRegistroUsuarios.validate(req.body);
 
-    if (quantidadeUsuarios > 0) {
-      return res.status(400).json({ mensagem: "O email informado já existe." });
+    const buscaEmail = await knex("usuarios").where({ email }).first();
+
+    if (buscaEmail) {
+      return res.status(400).json("Esse e-mail já possui cadastro!");
     }
+    const senhaCriptografada = await bcryptjs.hash(senha, 10);
 
-    const senhaCriptografada = await bcrypt.hash(senha, 10);
-
-    const query =
-      "insert into usuarios (nome, email, senha, nome_loja) values ($1, $2, $3, $4)";
-    const usuarioCadastrado = await conexao.query(query, [
+    const novoUsuario = await knex("usuarios").insert({
       nome,
       email,
-      senhaCriptografada,
+      senha: senhaCriptografada,
       nome_loja,
-    ]);
+    });
 
-    if (usuarioCadastrado.rowCount === 0) {
-      return res
-        .status(500)
-        .json({ mensagem: "Não foi possível cadastrar o usuário." });
+    if (!novoUsuario) {
+      return res.status(400).json("O usuário não foi cadastrado.");
     }
-
     return res.status(201).send();
   } catch (error) {
     return res.status(500).json(error.message);
@@ -54,66 +32,57 @@ const cadastrarUsuario = async (req, res) => {
 };
 
 const detalharUsuario = async (req, res) => {
+  const { usuario } = req;
   try {
-    return res.status(200).json(req.usuario);
+    return res.status(200).json(usuario);
   } catch (error) {
-    res.status(500).json(error.message);
-    return;
+    console.log(error.message);
+    return res.status(400).json(error.message);
   }
 };
 
 const atualizarUsuario = async (req, res) => {
   const { nome, email, senha, nome_loja } = req.body;
-  const { usuario } = req;
-
-  if (!nome) {
-    return res.status(400).json({ mensagem: "O campo nome é obrigatório." });
-  }
-  if (!email) {
-    return res.status(400).json({ mensagem: "O campo email é obrigatório." });
-  }
-  if (!senha) {
-    return res.status(400).json({ mensagem: "O campo senha é obrigatório." });
-  }
-  if (!nome_loja) {
-    return res
-      .status(400)
-      .json({ mensagem: "O campo nome_loja é obrigatório." });
-  }
+  const { id } = req.usuario;
 
   try {
-    const queryConsultaEmail = "select * from usuarios where email = $1";
-    const { rowCount: quantidadeUsuarios, rows: perfil } = await conexao.query(
-      queryConsultaEmail,
-      [email]
-    );
+    await validacoesRegistroUsuarios.validate(req.body);
 
-    if (quantidadeUsuarios > 0 && usuario.id !== perfil[0].id) {
-      return res.status(400).json({
-        mensagem: "O e-mail informado já se encontra cadastrado.",
-      });
+    if (nome) {
+      req.body.nome = nome;
     }
-    const senhaCriptografada = await bcrypt.hash(senha, 10);
 
-    const queryUsuarioEditado =
-      "update usuarios set nome=$1, email =$2, senha=$3, nome_loja=$4 where id=$5";
-    const usuarioEditado = await conexao.query(queryUsuarioEditado, [
-      nome,
-      email,
-      senhaCriptografada,
-      nome_loja,
-      usuario.id,
-    ]);
+    if (email) {
+      if (email !== req.usuario.email) {
+        const buscaEmail = await knex("usuarios").where({ email }).first();
 
-    if (usuarioEditado.rowCount === 0) {
-      return res
-        .status(500)
-        .json({ mensagem: "Não foi possível atualizar o seu perfil." });
+        if (buscaEmail) {
+          return res.status(400).json("Esse e-mail já possui cadastro!");
+        }
+      }
+
+      req.body.email = email;
     }
-    return res.status(201).send();
+    const senhaCriptografada = await bcryptjs.hash(senha, 10);
+
+    if (senha) {
+      req.body.senha = senhaCriptografada;
+    }
+
+    if (nome_loja) {
+      req.body.nome_loja = nome_loja;
+    }
+
+    const usuarioAtualizado = await knex("usuarios")
+      .update({ nome, email, senha: senhaCriptografada, nome_loja })
+      .where({ id });
+
+    if (!usuarioAtualizado) {
+      return res.status(400).json("O usuario não foi atualizado");
+    }
+    return res.status(200).json("Usuario foi atualizado com sucesso.");
   } catch (error) {
-    res.status(500).json(error.message);
-    return;
+    return res.status(400).json(error.message);
   }
 };
 

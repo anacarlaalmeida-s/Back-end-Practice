@@ -1,5 +1,5 @@
-const conexao = require("../conexao");
-const bcrypt = require("bcrypt");
+const knex = require("../conexao");
+const bcryptjs = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const senhaToken = require("../senhaToken");
 
@@ -13,22 +13,16 @@ const login = async (req, res) => {
   }
 
   try {
-    const queryConsultaEmail = "select * from usuarios where email = $1";
-    const { rows, rowCount } = await conexao.query(queryConsultaEmail, [email]);
-
-    if (rowCount === 0) {
-      return res.status(400).json({ mensagem: "Usuário não encontrado." });
+    const usuario = await knex("usuarios").where({ email }).first();
+    if (!usuario) {
+      return res.status(404).json("Usuário não encontrado!");
     }
 
-    const usuario = rows[0];
+    const validandoSenha = await bcryptjs.compare(senha, usuario.senha);
 
-    const senhaVerificada = await bcrypt.compare(senha, usuario.senha);
-    if (!senhaVerificada) {
-      return res
-        .status(400)
-        .json({ mensagem: "Usuário e/ou senha inválido(s)." });
+    if (!validandoSenha) {
+      return res.status(400).json("Email e senha não confere");
     }
-
     const token = jwt.sign({ id: usuario.id }, senhaToken, { expiresIn: "6h" });
     return res.status(200).json({ token });
   } catch (error) {

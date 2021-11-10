@@ -1,4 +1,5 @@
-const conexao = require("../conexao");
+const knex = require("../conexao");
+const validacoesRegistroProduto = require("../schemas/validacoesRegistroProduto");
 
 const listarProdutos = async (req, res) => {
   const { usuario } = req;
@@ -6,52 +7,43 @@ const listarProdutos = async (req, res) => {
 
   try {
     if (categoria) {
-      const produtosCategoria = await conexao.query(
-        "select * from produtos where categoria ilike $1 and usuario_id = $2",
-        [`%${categoria}%`, usuario.id]
-      );
-      return res.status(200).json(produtosCategoria.rows);
+      const produtosDaCategoria = await knex("produtos")
+        .where("usuario_id", usuario.id)
+        .andWhere({ categoria })
+        .returning("*");
+      return res.status(200).json(produtosDaCategoria);
     }
+    const listaProdutos = await knex("produtos")
+      .where("usuario_id", usuario.id)
+      .returning("*");
 
-    const produtos = await conexao.query(
-      "select * from produtos where usuario_id = $1",
-      [usuario.id]
-    );
-    return res.status(200).json(produtos.rows);
+    return res.status(200).json(listaProdutos);
   } catch (error) {
-    return res.status(500).json(error.message);
+    return res.status(400).json(error.message);
   }
 };
 
 const detalharProduto = async (req, res) => {
   const { usuario } = req;
-  const { id: idProduto } = req.params;
+  const { id } = req.params;
 
-  if (isNaN(Number(idProduto))) {
+  if (isNaN(Number(id))) {
     return res.status(400).json({
       mensagem: "O ID do prodouto deve ser um número inteiro positivo válido.",
     });
   }
 
   try {
-    const produtoPesquisado = await conexao.query(
-      "select * from produtos where id=$1",
-      [idProduto]
-    );
+    const produto = await knex("produtos")
+      .where("usuario_id", usuario.id)
+      .andWhere({ id })
+      .first();
 
-    if (produtoPesquisado.rowCount === 0) {
-      return res.status(404).json({
-        mensagem: `Não existe produto cadastrado com ID ${idProduto}.`,
-      });
-    }
-    if (produtoPesquisado.rows[0].usuario_id !== usuario.id) {
-      return res.status(403).json({
-        mensagem:
-          "O usuário logado não tem permissão para acessar este produto.",
-      });
+    if (!produto) {
+      return res.status(404).json("Produto não encontrado");
     }
 
-    return res.status(200).json(produtoPesquisado.rows[0]);
+    return res.status(200).json(produto);
   } catch (error) {
     res.status(500).json(error.message);
     return;
@@ -62,50 +54,21 @@ const cadastrarProduto = async (req, res) => {
   const { nome, quantidade, categoria, preco, descricao, imagem } = req.body;
   const { usuario } = req;
 
-  if (!nome) {
-    return res
-      .status(400)
-      .json({ mensagem: "O nome do produto deve ser informado." });
-  }
-  if (!quantidade) {
-    return res
-      .status(400)
-      .json({ mensagem: "A quantidade do produto deve ser informada." });
-  }
-  if (!preco) {
-    return res
-      .status(400)
-      .json({ mensagem: "O preço do produto deve ser informado." });
-  }
-  if (!descricao) {
-    return res
-      .status(400)
-      .json({ mensagem: "A descrição do produto deve ser informada." });
-  }
-  if (quantidade <= 0 || isNaN(Number(quantidade))) {
-    return res.status(400).json({
-      mensagem:
-        "O campo quantidade precisa ser um número positivo válido e maior que 0.",
-    });
-  }
-
   try {
-    const queryProduto =
-      "insert into produtos (usuario_id, nome, quantidade, categoria, preco, descricao, imagem) values ($1, $2, $3, $4, $5, $6, $7)";
-    const produto = await conexao.query(queryProduto, [
-      usuario.id,
+    await validacoesRegistroProduto.validate(req.body);
+
+    const novoProduto = await knex("produtos").insert({
+      usuario_id: usuario.id,
       nome,
       quantidade,
       categoria,
       preco,
       descricao,
       imagem,
-    ]);
+    });
 
-    if (produto.rowCount === 0) {
-      return res
-        .status(500)
-        .json({ mensagem: "Não foi possível cadastrar o produto." });
+    if (!novoProduto) {
+      return res.status(400).json("O produto não foi cadastrado");
     }
     return res.status(201).send();
   } catch (error) {
@@ -116,68 +79,50 @@ const cadastrarProduto = async (req, res) => {
 const atualizarProduto = async (req, res) => {
   const { nome, quantidade, categoria, preco, descricao, imagem } = req.body;
   const { usuario } = req;
-  const { id: idProduto } = req.params;
-
-  if (!nome) {
-    return res
-      .status(400)
-      .json({ mensagem: "O nome do produto deve ser informado." });
-  }
-  if (!quantidade) {
-    return res
-      .status(400)
-      .json({ mensagem: "A quantidade do produto deve ser informada." });
-  }
-  if (!preco) {
-    return res
-      .status(400)
-      .json({ mensagem: "O preço do produto deve ser informado." });
-  }
-  if (!descricao) {
-    return res
-      .status(400)
-      .json({ mensagem: "A descrição do produto deve ser informada." });
-  }
-  if (quantidade <= 0) {
-    return res
-      .status(400)
-      .json({ mensagem: "O campo quantidade precisa ser maior que 0." });
-  }
+  const { id } = req.params;
 
   try {
-    const produtoPesquisado = await conexao.query(
-      "select * from produtos where id=$1",
-      [idProduto]
-    );
+    await validacoesRegistroProduto.validate(req.body);
 
-    if (produtoPesquisado.rowCount === 0) {
-      return res.status(404).json({
-        mensagem: `Não existe produto cadastrado com ID ${idProduto}.`,
-      });
-    }
-    if (produtoPesquisado.rows[0].usuario_id !== usuario.id) {
-      return res.status(403).json({
-        mensagem:
-          "O usuário logado não tem permissão para alterar este produto.",
-      });
+    const produto = await knex("produtos")
+      .where("usuario_id", usuario.id)
+      .andWhere({ id })
+      .first();
+
+    if (!produto) {
+      return res.status(404).json("Produto não encontrado");
     }
 
-    const queryProdutoEditado =
-      "update produtos set nome=$1, quantidade =$2, categoria=$3, preco=$4, descricao=$5, imagem=$6 where usuario_id=$7";
-    const produtoEditado = await conexao.query(queryProdutoEditado, [
-      nome,
-      quantidade,
-      categoria,
-      preco,
-      descricao,
-      imagem,
-      usuario.id,
-    ]);
+    if (nome) {
+      req.body.nome = nome;
+    }
 
-    if (produtoEditado.rowCount === 0) {
-      return res
-        .status(500)
-        .json({ mensagem: "Não foi possível atualizar o produto." });
+    if (quantidade) {
+      req.body.quantidade = quantidade;
+    }
+
+    if (categoria) {
+      req.body.categoria = categoria;
+    }
+
+    if (descricao) {
+      req.body.descricao = descricao;
+    }
+
+    if (preco) {
+      req.body.preco = preco;
+    }
+
+    if (imagem) {
+      req.body.imagem = imagem;
+    }
+
+    const produtoAtualizado = await knex("produtos")
+      .update({ nome, quantidade, categoria, preco, descricao, imagem })
+      .where({ id });
+
+    if (!produtoAtualizado) {
+      return res.status(400).json("O produto não foi atualizado");
     }
     return res.status(204).send();
   } catch (error) {
@@ -188,37 +133,22 @@ const atualizarProduto = async (req, res) => {
 
 const excluirProduto = async (req, res) => {
   const { usuario } = req;
-  const { id: idProduto } = req.params;
+  const { id } = req.params;
 
   try {
-    const produtoPesquisado = await conexao.query(
-      "select * from produtos where id=$1",
-      [idProduto]
-    );
+    const produto = await knex("produtos")
+      .where("usuario_id", usuario.id)
+      .andWhere({ id })
+      .first();
 
-    if (produtoPesquisado.rowCount === 0) {
-      return res.status(404).json({
-        mensagem: `Não existe produto cadastrado com ID ${idProduto}.`,
-      });
-    }
-    if (produtoPesquisado.rows[0].usuario_id !== usuario.id) {
-      return res.status(403).json({
-        mensagem:
-          "O usuário logado não tem permissão para excluir este produto.",
-      });
+    if (!produto) {
+      return res.status(404).json("Produto não encontrado");
     }
 
-    const produtoExcluido = await conexao.query(
-      "delete from produtos where id = $1",
-      [idProduto]
-    );
-
-    if (produtoExcluido.rowCount === 0) {
-      return res
-        .status(500)
-        .json({ mensagem: "Não foi possível atualizar o produto." });
+    const produtoExcluido = await knex("produtos").del().where({ id });
+    if (!produtoExcluido) {
+      return res.status(400).json("O produto não foi excluido");
     }
-
     return res.status(204).send();
   } catch (error) {
     res.status(500).json(error.message);
