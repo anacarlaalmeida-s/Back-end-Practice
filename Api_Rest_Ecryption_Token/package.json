@@ -1,0 +1,32 @@
+{
+  "name": "Market-Place",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon ./src/index.js",
+    "start": "nodemon ./src/index.js",
+    "start:dev": "nodemon --watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
+    "knex": "^0.95.11",
+    "nodemon": "^2.0.15",
+    "pg": "^8.6.0",
+    "webpack": "^5.59.1",
+    "webpack-dev-server": "^4.3.1",
+    "yup": "^0.32.11",
+    "yup-locale-pt": "^0.0.9"
+  },
+  "engines": {
+    "node": "14.18.1",
+    "npm": "8.1.0"
+  }
+}
